@@ -1,3 +1,4 @@
+
 import os
 from pathlib import Path
 
@@ -30,22 +31,53 @@ load_dotenv()
 
 COLLECTION_NAME = "tn_schemes"
 
-qdrant_url = os.getenv("QDRANT_URL")
-qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+# ============================================================
+# 3. GET CONFIGURATION
+# ============================================================
+
+def get_config(key):
+    """
+    Get configuration from:
+    1. Local .env environment variables
+    2. Streamlit Cloud secrets
+    """
+
+    value = os.getenv(key)
+
+    if value:
+        return value
+
+    try:
+        return st.secrets.get(key)
+    except Exception:
+        return None
 
 
-if not qdrant_url:
-    st.error("QDRANT_URL is missing from .env")
+google_api_key = get_config("GOOGLE_API_KEY")
+qdrant_url = get_config("QDRANT_URL")
+qdrant_api_key = get_config("QDRANT_API_KEY")
+
+
+# ============================================================
+# 4. CHECK CONFIGURATION
+# ============================================================
+
+if not google_api_key:
+    st.error("GOOGLE_API_KEY is missing.")
     st.stop()
 
+if not qdrant_url:
+    st.error("QDRANT_URL is missing.")
+    st.stop()
 
 if not qdrant_api_key:
-    st.error("QDRANT_API_KEY is missing from .env")
+    st.error("QDRANT_API_KEY is missing.")
     st.stop()
 
 
 # ============================================================
-# 3. APPLICATION TITLE
+# 5. APPLICATION TITLE
 # ============================================================
 
 st.title("🌾 TN Government Schemes Assistant")
@@ -57,19 +89,20 @@ st.write(
 
 
 # ============================================================
-# 4. LOAD GEMINI EMBEDDINGS
+# 6. LOAD GEMINI EMBEDDINGS
 # ============================================================
 
 @st.cache_resource
 def load_embeddings():
 
     return GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001"
+        model="models/gemini-embedding-001",
+        google_api_key=google_api_key,
     )
 
 
 # ============================================================
-# 5. LOAD QDRANT VECTOR STORE
+# 7. LOAD QDRANT VECTOR STORE
 # ============================================================
 
 @st.cache_resource
@@ -88,7 +121,7 @@ def load_vector_store():
 
 
 # ============================================================
-# 6. LOAD GEMINI LANGUAGE MODEL
+# 8. LOAD GEMINI LANGUAGE MODEL
 # ============================================================
 
 @st.cache_resource
@@ -96,11 +129,12 @@ def load_llm():
 
     return ChatGoogleGenerativeAI(
         model="gemini-3.6-flash",
+        google_api_key=google_api_key,
     )
 
 
 # ============================================================
-# 7. LOAD RAG COMPONENTS
+# 9. LOAD RAG COMPONENTS
 # ============================================================
 
 try:
@@ -108,18 +142,41 @@ try:
     vector_store = load_vector_store()
     llm = load_llm()
 
-except Exception:
+except Exception as e:
 
-    st.error(
-        "⚠️ Unable to connect to the RAG system. "
-        "Please check your Qdrant configuration and API keys."
-    )
+    error_message = str(e)
+
+    if (
+        "429" in error_message
+        or "quota" in error_message.lower()
+        or "RESOURCE_EXHAUSTED" in error_message
+    ):
+
+        st.error(
+            "⚠️ Gemini API quota has been reached."
+        )
+
+        st.info(
+            "The application is configured correctly, "
+            "but Gemini's API quota is currently unavailable. "
+            "Please try again after the quota resets."
+        )
+
+    else:
+
+        st.error(
+            "⚠️ Unable to connect to the RAG system."
+        )
+
+        st.info(
+            "Please check your Gemini and Qdrant configuration."
+        )
 
     st.stop()
 
 
 # ============================================================
-# 8. EXAMPLE QUESTIONS
+# 10. EXAMPLE QUESTIONS
 # ============================================================
 
 st.subheader("💡 Example Questions")
@@ -143,7 +200,7 @@ for example in example_questions:
 
 
 # ============================================================
-# 9. QUESTION INPUT
+# 11. QUESTION INPUT
 # ============================================================
 
 question = st.text_input(
@@ -157,7 +214,7 @@ question = st.text_input(
 
 
 # ============================================================
-# 10. BUTTONS
+# 12. BUTTONS
 # ============================================================
 
 col1, col2 = st.columns(2)
@@ -180,7 +237,7 @@ with col2:
 
 
 # ============================================================
-# 11. CLEAR BUTTON
+# 13. CLEAR BUTTON
 # ============================================================
 
 if clear_button:
@@ -191,7 +248,7 @@ if clear_button:
 
 
 # ============================================================
-# 12. PROCESS QUESTION
+# 14. PROCESS QUESTION
 # ============================================================
 
 if ask_button:
@@ -204,7 +261,7 @@ if ask_button:
 
 
     # ========================================================
-    # 13. RETRIEVE RELEVANT DOCUMENTS
+    # 15. RETRIEVE RELEVANT DOCUMENTS
     # ========================================================
 
     with st.spinner("🔎 Searching government documents..."):
@@ -216,11 +273,10 @@ if ask_button:
                 k=6,
             )
 
-        except Exception:
+        except Exception as e:
 
             st.error(
-                "⚠️ Error while searching the government "
-                "documents. Please try again."
+                "⚠️ Error while searching the government documents."
             )
 
             st.stop()
@@ -237,7 +293,7 @@ if ask_button:
 
 
     # ========================================================
-    # 14. BUILD CONTEXT
+    # 16. BUILD CONTEXT
     # ========================================================
 
     context_parts = []
@@ -281,7 +337,7 @@ CONTENT:
 
 
     # ========================================================
-    # 15. RAG PROMPT
+    # 17. RAG PROMPT
     # ========================================================
 
     prompt = f"""
@@ -322,11 +378,11 @@ STRICT RULES:
 
 9. Do not add unnecessary information.
 
-10. Do not make claims that are not supported by the
-    provided CONTEXT.
+10. Do not make claims that are not supported by
+    the provided CONTEXT.
 
 11. Do not include a source section in your answer.
-    The application will display sources separately.
+    The application will display the sources separately.
 
 12. If the question asks for a list of schemes or projects,
     identify the relevant schemes or projects mentioned
@@ -343,7 +399,7 @@ Now answer the user's question using ONLY the CONTEXT.
 
 
     # ========================================================
-    # 16. GENERATE ANSWER
+    # 18. GENERATE ANSWER
     # ========================================================
 
     with st.spinner("🤖 Generating answer..."):
@@ -354,19 +410,15 @@ Now answer the user's question using ONLY the CONTEXT.
 
             answer = response.content
 
-
         except Exception as e:
 
             error_message = str(e)
 
-            # ------------------------------------------------
-            # GEMINI QUOTA ERROR
-            # ------------------------------------------------
 
             if (
-                "RESOURCE_EXHAUSTED" in error_message
-                or "429" in error_message
+                "429" in error_message
                 or "quota" in error_message.lower()
+                or "RESOURCE_EXHAUSTED" in error_message
             ):
 
                 st.error(
@@ -374,28 +426,24 @@ Now answer the user's question using ONLY the CONTEXT.
                 )
 
                 st.info(
-                    "The document search is working, but "
-                    "Gemini's answer-generation quota is "
-                    "temporarily unavailable. Please try "
-                    "again after the quota resets."
+                    "The document search is working, but Gemini's "
+                    "answer-generation quota is temporarily "
+                    "unavailable. Please try again after the "
+                    "quota resets."
                 )
-
-            # ------------------------------------------------
-            # OTHER GEMINI ERROR
-            # ------------------------------------------------
 
             else:
 
                 st.error(
                     "⚠️ An error occurred while generating "
-                    "the answer. Please try again."
+                    "the answer."
                 )
 
             st.stop()
 
 
     # ========================================================
-    # 17. CLEAN GEMINI RESPONSE
+    # 19. CLEAN GEMINI RESPONSE
     # ========================================================
 
     if isinstance(answer, list):
@@ -412,7 +460,7 @@ Now answer the user's question using ONLY the CONTEXT.
 
 
     # ========================================================
-    # 18. DISPLAY ANSWER
+    # 20. DISPLAY ANSWER
     # ========================================================
 
     st.subheader("🤖 Answer")
@@ -421,7 +469,7 @@ Now answer the user's question using ONLY the CONTEXT.
 
 
     # ========================================================
-    # 19. CHECK WHETHER ANSWER IS "NOT FOUND"
+    # 21. CHECK FOR REFUSAL
     # ========================================================
 
     not_found_message = (
@@ -434,7 +482,7 @@ Now answer the user's question using ONLY the CONTEXT.
 
 
     # ========================================================
-    # 20. DISPLAY SOURCES
+    # 22. DISPLAY SOURCES
     # ========================================================
 
     if not answer_is_not_found:
@@ -477,17 +525,11 @@ Now answer the user's question using ONLY the CONTEXT.
             )
 
 
-        # ----------------------------------------------------
         # Remove duplicates
-        # ----------------------------------------------------
-
         sources = list(set(sources))
 
 
-        # ----------------------------------------------------
         # Sort sources
-        # ----------------------------------------------------
-
         def sort_key(item):
 
             source, page = item
@@ -508,10 +550,7 @@ Now answer the user's question using ONLY the CONTEXT.
         sources.sort(key=sort_key)
 
 
-        # ----------------------------------------------------
         # Display sources
-        # ----------------------------------------------------
-
         for source, page in sources:
 
             st.markdown(
@@ -520,7 +559,7 @@ Now answer the user's question using ONLY the CONTEXT.
 
 
 # ============================================================
-# 21. FOOTER
+# 23. FOOTER
 # ============================================================
 
 st.divider()
