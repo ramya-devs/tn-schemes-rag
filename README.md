@@ -141,19 +141,18 @@ A prototype retrieval evaluation was performed using 15 test questions.
 Note: This measures source retrieval performance, not end-to-end answer accuracy.
 
 ## 🖥️ Screenshots
+
 ### Application Interface
 
-![Application Interface](screenshots/01-home.png)
+![Application Interface](https://github.com/ramya-devs/tn-schemes-rag/blob/main/screenshots/01-home.png)
 
 ### RAG Answer with Sources
 
-![RAG Answer with Sources](screenshots/02-rag-answer.png)
+![RAG Answer with Sources](https://github.com/ramya-devs/tn-schemes-rag/blob/main/screenshots/02-rag-answer.png)
 
 ### Grounded Refusal
 
-![Grounded Refusal](screenshots/03-grounded-refusal.png)
-
-
+![Grounded Refusal](https://github.com/ramya-devs/tn-schemes-rag/blob/main/screenshots/03-grounded-refusal.png)
 
 📁 Project Structure
 tn-schemes-rag/
