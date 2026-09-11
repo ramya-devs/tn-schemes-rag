@@ -6,9 +6,11 @@ The application supports questions in **English and Tamil** and provides **conte
 
 ## 🚀 Live Demo
 
-**TN Government Schemes Assistant:** [YOUR_STREAMLIT_APP_URL](https://tn-schemes-assistant.streamlit.app/)
+👉 **[TN Government Schemes Assistant](https://tn-schemes-assistant.streamlit.app/)**
 
 Built with **Streamlit**.
+
+---
 
 ## 📌 Problem
 
@@ -26,9 +28,11 @@ can be time-consuming.
 
 This project provides a simple conversational interface to retrieve relevant information from government documents.
 
+---
+
 ## 💡 Solution
 
-The application uses a **Retrieval-Augmented Generation (RAG)** pipeline:
+The application uses a **Retrieval-Augmented Generation (RAG)** pipeline.
 
 ```text
 Government PDFs
@@ -52,8 +56,10 @@ Gemini 3.6 Flash
 Grounded Answer
       ↓
 Source + Page Number
+ 
+---
 
-✨ Features
+## ✨ Features
 📄 Government PDF document processing
 🔎 Semantic similarity search
 🧠 Retrieval-Augmented Generation
@@ -63,17 +69,17 @@ Source + Page Number
 🚫 Refusal when information is unavailable in the documents
 ☁️ Qdrant vector database
 🎨 Streamlit web interface
-📚 Knowledge Base
-Kuruvai Special Package 2026
 
+## 📚 Knowledge Base
+🌾 Kuruvai Special Package 2026
 The knowledge base includes information about:
 
 Financial allocation
 Delta and non-delta areas
 Paddy cultivation incentives
 Kuruvai, Kar and Sornavari seasons
-Permanent Pandal Scheme
 
+🌱 Permanent Pandal Scheme
 The knowledge base includes information about:
 
 Subsidy details
@@ -82,24 +88,30 @@ GI wires
 Planting material and labour
 SC/ST assistance
 Eligibility and implementation conditions
-🛠️ Tech Stack
-Technology	Purpose
-Python	Application development
-LangChain	RAG pipeline
-Gemini	Embeddings and LLM
-Qdrant	Vector database
-PyPDF	PDF text extraction
-Streamlit	Web interface
-🔍 Example Questions
+
+## 🛠️ Tech Stack
+| Technology | Purpose                 |
+| ---------- | ----------------------- |
+| Python     | Application development |
+| LangChain  | RAG pipeline            |
+| Gemini     | Embeddings and LLM      |
+| Qdrant     | Vector database         |
+| PyPDF      | PDF text extraction     |
+| Streamlit  | Web interface           |
+
+
+## 🔍 Example Questions
 English
 How much is allocated for the Kuruvai Special Package 2026?
 
 What is the subsidy under the Permanent Pandal scheme?
 
 What schemes are available in the documents?
+
 Tamil
 குறுவை சிறப்புத் தொகுப்புத் திட்டம் 2026 என்றால் என்ன?
-🛡️ Grounded Answering
+
+## 🛡️ Grounded Answering
 
 The application instructs the LLM to:
 
@@ -112,18 +124,23 @@ Refuse when the requested information is not available
 Example refusal:
 
 இந்த தகவல் வழங்கப்பட்ட அரசு ஆவணங்களில் இல்லை.
-📊 Evaluation
+
+This helps reduce unsupported or hallucinated answers by restricting the generation step to retrieved document context.
+
+## 📊 Evaluation
 
 A prototype retrieval evaluation was performed using 15 test questions.
 
-Metric	Result
-Test questions	15
-Expected sources retrieved	15
-Source retrieval rate	100%
+| Metric                     |   Result |
+| -------------------------- | -------: |
+| Test questions             |       15 |
+| Expected sources retrieved |       15 |
+| Source retrieval rate      | **100%** |
 
-This measures source retrieval performance, not end-to-end answer accuracy.
 
-🖥️ Screenshots
+Note: This measures source retrieval performance, not end-to-end answer accuracy.
+
+## 🖥️ Screenshots
 ### Application Interface
 
 ![Application Interface](screenshots/01-home.png)
@@ -137,7 +154,6 @@ This measures source retrieval performance, not end-to-end answer accuracy.
 ![Grounded Refusal](screenshots/03-grounded-refusal.png)
 RAG Answer with Sources
 
-Grounded Refusal
 
 📁 Project Structure
 tn-schemes-rag/
@@ -162,21 +178,24 @@ tn-schemes-rag/
 ├── requirements.txt
 └── README.md
 
-⚙️ Setup
+## ⚙️ Setup
 1. Clone the repository
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/ramya-devs/tn-schemes-rag.git
 cd tn-schemes-rag
+
 2. Create a virtual environment
 python -m venv venv
 
-Activate it on Windows:
+  Activate it on Windows:
 
 venv\Scripts\activate
+
 3. Install dependencies
 pip install -r requirements.txt
+
 4. Configure API keys
 
-Create a .env file:
+Create a .env file in the project root:
 
 GOOGLE_API_KEY=your_google_api_key
 QDRANT_URL=your_qdrant_url
@@ -184,13 +203,22 @@ QDRANT_API_KEY=your_qdrant_api_key
 
 Never upload .env to GitHub.
 
-5. Ingest documents
+5. Ingest the documents
+
+Run:
+
 python src\ingest.py
+
+This extracts the PDF content, splits it into chunks, generates embeddings, and stores the vectors in Qdrant.
+
 6. Run the application
 streamlit run src\app.py
-🔐 Security
 
-API keys are stored using environment variables and Streamlit secrets.
+The application will open in your browser.
+
+## 🔐 Security
+
+API keys are stored using environment variables locally and Streamlit secrets when deployed.
 
 The following files are excluded from Git:
 
@@ -200,19 +228,23 @@ __pycache__/
 
 Never expose API keys in:
 
-GitHub
+GitHub repositories
 Screenshots
 Demo videos
 README files
-🚀 Future Improvements
-Add more official government documents
+Public code
+
+## 🚀 Future Improvements
+Add more official Tamil Nadu government documents
 Add OCR support for scanned PDFs
 Improve Tamil-English retrieval
 Add hybrid search
 Improve answer evaluation
 Add FastAPI backend
 Implement Agentic RAG
-🎯 What I Learned
+Expand the knowledge base with additional agricultural schemes
+
+## 🎯 What I Learned
 
 Through this project, I gained hands-on experience with:
 
@@ -226,8 +258,12 @@ Prompt engineering
 PDF document processing
 Streamlit
 RAG evaluation
-👩‍💻 Author
+Cloud deployment
+
+## 👩‍💻 Author
 
 Ramya
 
 Generative AI / AI Engineering Enthusiast
+
+
