@@ -144,15 +144,15 @@ Note: This measures source retrieval performance, not end-to-end answer accuracy
 
 ### Application Interface
 
-![Application Interface](https://github.com/ramya-devs/tn-schemes-rag/blob/main/screenshots/01-home.png)
+<img src="https://raw.githubusercontent.com/ramya-devs/tn-schemes-rag/main/screenshots/01-home.png" alt="Application Interface" width="800">
 
 ### RAG Answer with Sources
 
-![RAG Answer with Sources](https://github.com/ramya-devs/tn-schemes-rag/blob/main/screenshots/02-rag-answer.png)
+<img src="https://raw.githubusercontent.com/ramya-devs/tn-schemes-rag/main/screenshots/02-rag-answer.png" alt="RAG Answer with Sources" width="800">
 
 ### Grounded Refusal
 
-![Grounded Refusal](https://github.com/ramya-devs/tn-schemes-rag/blob/main/screenshots/03-grounded-refusal.png)
+<img src="https://raw.githubusercontent.com/ramya-devs/tn-schemes-rag/main/screenshots/03-grounded-refusal.png" alt="Grounded Refusal" width="800">
 
 📁 Project Structure
 tn-schemes-rag/
