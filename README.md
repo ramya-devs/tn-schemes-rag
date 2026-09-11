@@ -152,7 +152,7 @@ Note: This measures source retrieval performance, not end-to-end answer accuracy
 ### Grounded Refusal
 
 ![Grounded Refusal](screenshots/03-grounded-refusal.png)
-RAG Answer with Sources
+
 
 
 📁 Project Structure
